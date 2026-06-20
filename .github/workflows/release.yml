@@ -31,15 +31,12 @@ jobs:
             artifact_name: windows
             dist_cmd: dist:win
     runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        working-directory: xcorner-app
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install deps
         run: npm install
@@ -55,9 +52,9 @@ jobs:
         with:
           name: xcorner-${{ matrix.artifact_name }}
           path: |
-            xcorner-app/dist/*.dmg
-            xcorner-app/dist/*.exe
-            xcorner-app/dist/*.AppImage
+            dist/*.dmg
+            dist/*.exe
+            dist/*.AppImage
           if-no-files-found: ignore
 
   release:
