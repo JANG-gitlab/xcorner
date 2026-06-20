@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self';
+                 img-src xmedia: data: blob:;
+                 media-src xmedia: blob:;
+                 connect-src xmedia:;
+                 style-src 'self' 'unsafe-inline';
+                 script-src 'self';" />
+  <title>Xcorner</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="vendor/mammoth.min.js"></script>
+  <script src="vendor/xlsx.min.js"></script>
+</head>
+<body>
+  <!-- Ecran de lancement (laisse le temps au prewarm goon/femboy) -->
+  <div id="splash" hidden>
+    <div class="splash-inner">
+      <div class="splash-logo">
+        <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sbg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#241338"/><stop offset="1" stop-color="#0a0a14"/>
+            </linearGradient>
+            <linearGradient id="sneon" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#ff5dc8"/><stop offset="1" stop-color="#7b5cff"/>
+            </linearGradient>
+            <linearGradient id="sfold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#9b7bff"/><stop offset="1" stop-color="#ff7ad9"/>
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="1024" height="1024" rx="228" fill="url(#sbg)"/>
+          <path d="M724 150 L874 150 L874 300 Z" fill="url(#sfold)"/>
+          <rect x="437" y="247" width="150" height="530" rx="75" fill="url(#sneon)" transform="rotate(45 512 512)"/>
+          <rect x="437" y="247" width="150" height="530" rx="75" fill="url(#sneon)" transform="rotate(-45 512 512)"/>
+          <path d="M372 388 q34 -30 68 0" fill="none" stroke="#0a0a14" stroke-width="22" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="splash-credit">made by Jon Arbuckle</div>
+    </div>
+  </div>
+
+  <header id="bar">
+    <span id="bar-title" class="drag">Xcorner</span>
+    <div class="bar-actions">
+      <button id="btn-new" title="Nouvelle fenetre">+</button>
+      <button id="btn-sources" title="Sources">Sources</button>
+      <button id="btn-mode" title="Detacher / Epingler">Detacher</button>
+      <button id="btn-close" title="Fermer cette fenetre">Fermer</button>
+    </div>
+  </header>
+
+  <!-- Panneau des sources (sert aussi d'etat "vide") -->
+  <section id="setup" class="view" hidden>
+    <div class="setup-box">
+
+      <!-- En-tete : logo + titre + statut -->
+      <header class="setup-head">
+        <div class="setup-brand">
+          <svg class="setup-mark" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="hbg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#241338"/><stop offset="1" stop-color="#0a0a14"/>
+              </linearGradient>
+              <linearGradient id="hneon" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#ff5dc8"/><stop offset="1" stop-color="#7b5cff"/>
+              </linearGradient>
+            </defs>
+            <rect x="0" y="0" width="1024" height="1024" rx="228" fill="url(#hbg)"/>
+            <rect x="437" y="247" width="150" height="530" rx="75" fill="url(#hneon)" transform="rotate(45 512 512)"/>
+            <rect x="437" y="247" width="150" height="530" rx="75" fill="url(#hneon)" transform="rotate(-45 512 512)"/>
+          </svg>
+          <h1 id="setup-title">Xcorner</h1>
+        </div>
+        <div id="setup-status" class="status-pill">Aucune source</div>
+      </header>
+
+      <!-- Section : medias locaux -->
+      <section class="panel-section">
+        <div class="section-label">Medias locaux</div>
+        <div class="chip-row">
+          <button id="add-folder" class="chip">
+            <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-7l-2-2H5a2 2 0 0 0-2 2z"/></svg>
+            Dossier
+          </button>
+          <button id="add-file" class="chip">
+            <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Fichiers
+          </button>
+        </div>
+        <div class="row-actions">
+          <button id="clear-sources" class="link">Effacer</button>
+          <button id="start-btn" class="cta">Lancer</button>
+        </div>
+      </section>
+
+      <!-- Section : services web -->
+      <section class="panel-section">
+        <div class="section-label">Services</div>
+        <div class="chip-row">
+          <button id="open-tiktok" class="chip">
+            <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></svg>
+            TikTok
+          </button>
+          <button id="open-youtube" class="chip">
+            <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><polygon points="10 9 16 12 10 15" fill="currentColor" stroke="none"/></svg>
+            YouTube
+          </button>
+          <button id="open-site" class="chip">
+            <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18"/></svg>
+            Site web
+          </button>
+          <button id="open-window" class="chip">
+            <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+            Fenetre
+          </button>
+        </div>
+        <div id="site-row" class="inline-row" hidden>
+          <input id="site-input" type="text" placeholder="URL (ex: open.spotify.com)" />
+          <button id="site-ok" class="cta-mini">Ouvrir</button>
+        </div>
+      </section>
+
+      <!-- Section : categories par defaut (rempli dynamiquement) -->
+      <section class="panel-section" id="cat-public-section" hidden>
+        <div class="section-label">Categories</div>
+        <div id="cat-public" class="cat-grid"></div>
+      </section>
+
+      <!-- Section : NSFW (cachee derriere un toggle) -->
+      <section class="panel-section">
+        <button id="nsfw-toggle" class="nsfw-toggle">
+          <span class="nsfw-dot"></span>NSFW<span class="nsfw-chev">▾</span>
+        </button>
+        <div id="nsfw-zone" class="nsfw-zone" hidden>
+          <div id="cat-nsfw" class="cat-grid"></div>
+          <details class="accounts-block">
+            <summary>Gerer les comptes</summary>
+            <div class="account-tools">
+              <button id="tt-toggle" class="link">+ Ajouter</button>
+              <button id="tt-reset" class="link">Defaut</button>
+            </div>
+            <div id="tt-row" class="inline-row" hidden>
+              <select id="tt-cat"></select>
+              <input id="tt-input" type="text" placeholder="Lien d'un compte TikTok" />
+              <button id="tt-ok" class="cta-mini">Ajouter</button>
+            </div>
+            <div id="tt-list" class="tt-list"></div>
+            <p id="tt-status" class="hint"></p>
+          </details>
+        </div>
+      </section>
+
+      <p id="setup-hint" class="hint"></p>
+      <footer class="setup-foot">
+        <span class="credit">made by <span class="credit-name">Jon Arbuckle</span></span>
+      </footer>
+    </div>
+  </section>
+
+  <!-- Selecteur de fenetre a capturer -->
+  <section id="picker" class="view" hidden>
+    <div class="picker-head">
+      <button id="picker-back">Retour</button>
+      <span class="picker-title">Choisir une fenetre</span>
+      <button id="picker-refresh">Actualiser</button>
+    </div>
+    <p id="picker-msg" class="hint" hidden></p>
+    <p class="picker-note">macOS ne liste que les fenetres du bureau actuel. Pour en voir d'autres, va sur leur bureau puis Actualiser.</p>
+    <div id="picker-grid"></div>
+  </section>
+
+  <!-- Lecteur -->
+  <section id="viewer" class="view" hidden>
+    <div id="stage">
+      <div class="slot" id="slotA"></div>
+      <div class="slot" id="slotB"></div>
+    </div>
+    <webview id="feed" hidden partition="persist:tiktok"
+             useragent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"></webview>
+    <footer id="controls">
+      <button id="btn-prev" class="ctrl" title="Precedent" aria-label="Precedent">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button id="btn-play" class="ctrl" data-state="playing" title="Pause / Lecture" aria-label="Lecture / Pause">
+        <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><polygon points="7 4 20 12 7 20" fill="currentColor"/></svg>
+      </button>
+      <button id="btn-next" class="ctrl" title="Suivant" aria-label="Suivant">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <button id="btn-mute" class="ctrl" data-state="muted" title="Son" aria-label="Son">
+        <svg class="i-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 3 9 3 15 6 15 11 19" fill="currentColor" stroke="none"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/></svg>
+        <svg class="i-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 3 9 3 15 6 15 11 19" fill="currentColor" stroke="none"/><path d="M18 8a6 6 0 0 1 0 8M15 11a3 3 0 0 1 0 2"/></svg>
+      </button>
+    </footer>
+  </section>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

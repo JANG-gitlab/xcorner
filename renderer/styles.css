@@ -1,0 +1,804 @@
+:root {
+  /* surfaces */
+  --bg: #07060d;
+  --bg-grad-from: #120a24;
+  --bg-grad-to: #07060d;
+  --surface-1: #14111f;
+  --surface-2: #1c1729;
+  --surface-3: #2a2237;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.14);
+
+  /* texte */
+  --fg: #f1ecff;
+  --fg-soft: #c4bdd6;
+  --muted: #7e7591;
+
+  /* accents neon (logo) */
+  --accent-pink: #ff5dc8;
+  --accent-purple: #7b5cff;
+  --accent-gradient: linear-gradient(135deg, #ff5dc8 0%, #7b5cff 100%);
+  --accent-gradient-soft: linear-gradient(135deg, rgba(255, 93, 200, 0.18) 0%, rgba(123, 92, 255, 0.18) 100%);
+  --accent-glow: 0 0 20px rgba(255, 93, 200, 0.35), 0 0 40px rgba(123, 92, 255, 0.18);
+
+  /* semantique */
+  --danger: #ff5d6e;
+
+  /* rayons + ombre */
+  --r-sm: 8px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-pill: 999px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.55);
+
+  /* layout */
+  --bar-h: 32px;
+}
+
+* { box-sizing: border-box; }
+
+/* L'attribut hidden doit toujours l'emporter sur un display defini en CSS */
+[hidden] { display: none !important; }
+
+/* --- Ecran de lancement --- */
+#splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+}
+#splash.hide { opacity: 0; }
+.splash-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+.splash-logo {
+  width: 128px;
+  height: 128px;
+  opacity: 0;
+  animation: splashIn 0.7s ease forwards;
+}
+.splash-logo svg { width: 100%; height: 100%; display: block; }
+.splash-credit {
+  font-size: 12px;
+  color: #888;
+  letter-spacing: 1.5px;
+  opacity: 0;
+  animation: splashIn 0.6s ease 0.7s forwards;
+}
+@keyframes splashIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* --- Barre haute --- */
+#bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  height: var(--bar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px 0 12px;
+  background: rgba(20, 20, 20, 0.9);
+  border-bottom: 1px solid #222;
+}
+#bar .drag {
+  -webkit-app-region: drag;
+  flex: 1;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+}
+.bar-actions {
+  -webkit-app-region: no-drag;
+  display: flex;
+  gap: 4px;
+}
+.bar-actions button {
+  background: transparent;
+  border: 1px solid #333;
+  color: var(--muted);
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.bar-actions button:hover { color: var(--fg); border-color: #555; }
+
+/* --- Vues --- */
+body:hover #bar {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.view {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* --- Panneau Sources --- */
+#setup {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 20px 16px 28px;
+  background:
+    radial-gradient(110% 70% at 50% -10%, rgba(123, 92, 255, 0.18), transparent 60%),
+    radial-gradient(80% 60% at 100% 100%, rgba(255, 93, 200, 0.10), transparent 60%),
+    linear-gradient(180deg, var(--bg-grad-from), var(--bg-grad-to));
+  scrollbar-width: none;
+}
+#setup::-webkit-scrollbar { display: none; }
+.setup-box {
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  animation: setupIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes setupIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* En-tete */
+.setup-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+.setup-brand { display: flex; align-items: center; gap: 10px; }
+.setup-mark {
+  width: 36px;
+  height: 36px;
+  display: block;
+  filter: drop-shadow(0 4px 14px rgba(123, 92, 255, 0.35));
+}
+.setup-box h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  margin: 0;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  font-size: 11px;
+  color: var(--fg-soft);
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+}
+.status-pill::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-pink);
+  box-shadow: 0 0 8px var(--accent-pink);
+}
+
+/* Sections */
+.panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0 2px;
+}
+
+/* Chips (actions secondaires : Dossier, Fichiers, TikTok, etc.) */
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
+  flex: 1 1 calc(50% - 4px);
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 12px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.1s ease;
+}
+.chip:hover { background: var(--surface-2); border-color: var(--border-strong); }
+.chip:active { transform: scale(0.97); }
+.chip:focus-visible { outline: 2px solid var(--accent-purple); outline-offset: 2px; }
+.chip-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  color: var(--accent-pink);
+}
+
+/* Ligne d'actions a droite (lien Effacer + CTA Lancer) */
+.row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+/* CTA principal */
+.cta {
+  flex: 1;
+  padding: 11px 16px;
+  background: var(--accent-gradient);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-md);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  box-shadow: var(--shadow-md), 0 0 0 0 rgba(255, 93, 200, 0);
+  transition: transform 0.1s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+.cta:hover { box-shadow: var(--shadow-md), var(--accent-glow); }
+.cta:active { transform: scale(0.98); }
+.cta:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; }
+
+/* Mini-CTA pour les rangees inline */
+.cta-mini {
+  background: var(--accent-gradient);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cta-mini:hover { box-shadow: var(--accent-glow); }
+
+/* Lien textuel (Effacer, + Ajouter, Defaut) */
+.link {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 4px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.link:hover { color: var(--fg); }
+
+/* Champ inline (URL site / compte TikTok) */
+.inline-row { display: flex; gap: 6px; }
+.inline-row input,
+.inline-row select {
+  flex: 1;
+  min-width: 0;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--fg);
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 12px;
+}
+.inline-row input::placeholder { color: var(--muted); }
+.inline-row input:focus,
+.inline-row select:focus { outline: none; border-color: var(--accent-purple); }
+.inline-row select { flex: 0 0 auto; padding: 0 8px; }
+
+/* Grille des categories (Family Guy, Calie, Goon, Femboy) */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.cat-grid button.cat,
+button.cat {
+  position: relative;
+  padding: 16px 12px;
+  min-height: 56px;
+  background: var(--accent-gradient-soft);
+  border: 1px solid rgba(255, 93, 200, 0.25);
+  border-radius: var(--r-md);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.12s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+button.cat::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent-gradient);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: -1;
+}
+button.cat:hover {
+  border-color: rgba(255, 93, 200, 0.55);
+  box-shadow: var(--accent-glow);
+  transform: translateY(-1px);
+}
+button.cat:hover::before { opacity: 0.18; }
+button.cat:active { transform: scale(0.97); }
+button.cat:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; transform: none; }
+
+/* NSFW toggle */
+.nsfw-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 14px;
+  background: var(--surface-1);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r-md);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+.nsfw-toggle:hover { color: var(--accent-pink); border-color: var(--accent-pink); }
+.nsfw-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-pink);
+}
+.nsfw-chev {
+  font-size: 9px;
+  transition: transform 0.2s ease;
+}
+.nsfw-toggle[aria-expanded="true"] .nsfw-chev,
+.nsfw-zone:not([hidden]) ~ .nsfw-chev { transform: rotate(180deg); }
+
+.nsfw-zone {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  animation: nsfwIn 0.3s ease both;
+}
+@keyframes nsfwIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Gestion des comptes (details/summary) */
+.accounts-block { font-size: 12px; }
+.accounts-block summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 2px;
+  list-style: none;
+  user-select: none;
+}
+.accounts-block summary::-webkit-details-marker { display: none; }
+.accounts-block summary::before {
+  content: '▸';
+  display: inline-block;
+  margin-right: 6px;
+  transition: transform 0.15s ease;
+}
+.accounts-block[open] summary::before { transform: rotate(90deg); }
+.account-tools {
+  display: flex;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+/* Liste des comptes TikTok */
+.tt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 160px;
+  overflow: auto;
+  margin-top: 6px;
+  scrollbar-width: thin;
+}
+.tt-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 11px;
+  color: var(--fg-soft);
+}
+.tt-item .cat-tag {
+  color: var(--accent-purple);
+  font-weight: 700;
+  text-transform: capitalize;
+}
+.tt-item .mode-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--accent-pink);
+  border: 1px solid var(--accent-pink);
+  border-radius: var(--r-pill);
+}
+.tt-item button {
+  background: transparent;
+  border: none;
+  color: var(--danger);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0 4px;
+}
+.tt-item button:hover { color: #ff8a96; }
+
+/* Hint + footer */
+.hint {
+  min-height: 14px;
+  color: var(--accent-pink);
+  font-size: 11px;
+  margin: 0;
+  text-align: center;
+}
+.setup-foot {
+  text-align: center;
+  margin-top: 4px;
+}
+.credit {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.credit-name {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 700;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .setup-box, .nsfw-zone { animation: none; }
+  .chip, .cta, button.cat { transition: none; }
+}
+
+/* --- Lecteur --- */
+#viewer { background: #000; }
+#stage { position: absolute; inset: 0; }
+.slot {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.slot.active { opacity: 1; }
+
+/* Fond : meme media en cover, agrandi, floute et assombri */
+.slot .bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(28px) brightness(0.55);
+  transform: scale(1.18);
+  pointer-events: none;
+}
+/* Premier plan : media net, entier, centre */
+.slot .fg {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+/* Carte de texte */
+.slot .textcard {
+  position: relative;
+  z-index: 1;
+  max-width: 86%;
+  max-height: 86%;
+  overflow: auto;
+  background: rgba(18, 18, 18, 0.9);
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 18px 20px;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #eee;
+  user-select: text;
+}
+
+#controls {
+  position: absolute;
+  z-index: 40;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 12px;
+  background: linear-gradient(to top, rgba(0,0,0,0.65), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+#viewer:hover #controls,
+#controls.show { opacity: 1; }
+#controls button {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: var(--fg);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+#controls button:hover { background: rgba(255,255,255,0.15); }
+#controls button svg { width: 18px; height: 18px; display: block; }
+
+/* Toggles via data-state pour eviter le textContent emoji */
+.ctrl .i-pause, .ctrl .i-play,
+.ctrl .i-muted, .ctrl .i-unmuted { display: none; }
+.ctrl[data-state="playing"] .i-pause { display: block; }
+.ctrl[data-state="paused"]  .i-play  { display: block; }
+.ctrl[data-state="muted"]   .i-muted   { display: block; }
+.ctrl[data-state="unmuted"] .i-unmuted { display: block; }
+
+/* (Bloc panneau historique remplace par la nouvelle UI en haut du fichier) */
+
+/* --- Selecteur de fenetre a capturer (modale plein ecran) --- */
+#picker {
+  position: fixed;
+  inset: 0;
+  top: 0;
+  z-index: 200; /* au-dessus de la barre du haut (z-50) */
+  background: #050505;
+  overflow: auto;
+}
+.picker-head {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  background: rgba(10, 10, 10, 0.96);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #1c1c1c;
+  z-index: 1;
+  -webkit-app-region: drag;
+}
+.picker-head button {
+  -webkit-app-region: no-drag;
+  background: #1a1a22;
+  color: var(--fg);
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.picker-head button:hover { border-color: #555; background: #22222b; }
+.picker-title {
+  flex: 1;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: 0.3px;
+}
+#picker-msg { padding: 8px 12px; }
+.picker-note {
+  padding: 0 12px 8px;
+  font-size: 10px;
+  color: var(--muted);
+  font-style: italic;
+}
+#picker-grid {
+  padding: 10px 12px 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+.pick-item {
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: left;
+  font-family: inherit;
+  color: var(--fg);
+  transition: border-color 0.15s ease, transform 0.1s ease;
+}
+.pick-item:hover { border-color: #7b5cff; }
+.pick-item:active { transform: scale(0.98); }
+.pick-thumb {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #000;
+  border-radius: 4px;
+  object-fit: contain;
+}
+.pick-name {
+  font-size: 11px;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--fg);
+}
+
+/* Capture (rendu plein cadre dans une slot) */
+.slot .capture {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Fil TikTok (webview plein cadre) */
+#feed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  z-index: 1;
+  background: #000;
+}
+
+/* Mode fil : barre du haut toujours visible et qui ne recouvre pas la webview,
+   barre du bas masquee (sinon elle bloque l'interface TikTok). */
+body.feed-mode #bar { opacity: 1; pointer-events: auto; }
+body.feed-mode #feed { top: var(--bar-h); }
+body.feed-mode #controls { display: none; }
+
+/* --- PDF / web en plein cadre --- */
+.slot .docframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  z-index: 1;
+  background: #fff;
+}
+.slot .webframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  z-index: 1;
+  background: #000;
+}
+
+/* --- Word / tableur / non supporte (cartes) --- */
+.slot .doccard,
+.slot .sheetcard {
+  position: relative;
+  z-index: 1;
+  max-width: 90%;
+  max-height: 90%;
+  overflow: auto;
+  background: #fff;
+  color: #111;
+  border-radius: 8px;
+  padding: 18px 20px;
+  font-size: 13px;
+  line-height: 1.5;
+  user-select: text;
+}
+.slot .doccard img { max-width: 100%; }
+.slot .sheetcard table { border-collapse: collapse; }
+.slot .sheetcard td,
+.slot .sheetcard th { border: 1px solid #ddd; padding: 4px 8px; white-space: nowrap; }
+.slot .fallback {
+  position: relative;
+  z-index: 1;
+  max-width: 80%;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  background: rgba(18, 18, 18, 0.9);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 22px;
+}

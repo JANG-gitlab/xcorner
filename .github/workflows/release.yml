@@ -1,0 +1,79 @@
+name: release
+
+# Declenche un build cross-platform et publie une Release GitHub avec les
+# installeurs Mac (DMG arm64+x64), Windows (NSIS .exe) et Linux (AppImage).
+#
+# Usage : creer et pousser un tag commencant par v, ex :
+#   git tag v1.0.0 && git push --tags
+# Ou utiliser le bouton "Run workflow" dans l'onglet Actions.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14         # Apple Silicon
+            artifact_name: macos
+            dist_cmd: dist:mac
+          - os: ubuntu-latest
+            artifact_name: linux
+            dist_cmd: dist:linux
+          - os: windows-latest
+            artifact_name: windows
+            dist_cmd: dist:win
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: xcorner-app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install deps
+        run: npm install
+
+      - name: Build (telecharge yt-dlp + electron-builder)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npm run ${{ matrix.dist_cmd }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcorner-${{ matrix.artifact_name }}
+          path: |
+            xcorner-app/dist/*.dmg
+            xcorner-app/dist/*.exe
+            xcorner-app/dist/*.AppImage
+          if-no-files-found: ignore
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/**/*
+          generate_release_notes: true
+          draft: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

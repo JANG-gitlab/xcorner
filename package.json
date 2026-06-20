@@ -1,0 +1,79 @@
+{
+  "name": "xcorner-generic",
+  "version": "1.0.0",
+  "description": "Xcorner : fenetre flottante, dossier de medias configurable (image / video / texte), sans mot de passe",
+  "private": true,
+  "author": "Jon Arbuckle",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "fetch-ytdlp": "node scripts/fetch-ytdlp.js",
+    "dist": "node scripts/fetch-ytdlp.js && electron-builder",
+    "dist:mac": "node scripts/fetch-ytdlp.js darwin && electron-builder --mac",
+    "dist:win": "node scripts/fetch-ytdlp.js win32 && electron-builder --win",
+    "dist:linux": "node scripts/fetch-ytdlp.js linux && electron-builder --linux"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "mammoth": "^1.12.0",
+    "xlsx": "^0.18.5"
+  },
+  "build": {
+    "appId": "net.jeanf.xcorner.generic",
+    "productName": "Xcorner",
+    "asar": false,
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "renderer/**/*",
+      "config/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.entertainment",
+      "hardenedRuntime": false,
+      "target": [
+        { "target": "dmg", "arch": ["arm64", "x64"] }
+      ],
+      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "extraResources": [
+        { "from": "build/bin/darwin/", "to": "bin", "filter": ["**/*"] }
+      ]
+    },
+    "dmg": {
+      "title": "${productName} ${version}",
+      "writeUpdateInfo": false
+    },
+    "linux": {
+      "category": "AudioVideo",
+      "target": [
+        { "target": "AppImage", "arch": ["x64"] }
+      ],
+      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "extraResources": [
+        { "from": "build/bin/linux/", "to": "bin", "filter": ["**/*"] }
+      ]
+    },
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] }
+      ],
+      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "extraResources": [
+        { "from": "build/bin/win32/", "to": "bin", "filter": ["**/*"] }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "license": "build/credits.txt",
+      "shortcutName": "Xcorner"
+    }
+  }
+}

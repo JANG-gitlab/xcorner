@@ -1,0 +1,8 @@
+Xcorner
+
+Made by Jon Arbuckle.
+
+Fenetre flottante qui affiche en aleatoire vos medias :
+images, videos, documents, et liens YouTube / TikTok / Instagram.
+
+(c) Jon Arbuckle - usage personnel.
