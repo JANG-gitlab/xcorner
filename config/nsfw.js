@@ -43,12 +43,5 @@ module.exports = {
     accounts: [
       'https://www.tiktok.com/@foxfamilyguy'
     ]
-  },
-  calie: {
-    label: 'Calie',
-    nsfw: false,
-    accounts: [
-      'https://www.tiktok.com/@galetsurlaplage'
-    ]
   }
 };

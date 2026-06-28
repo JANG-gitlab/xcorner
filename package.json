@@ -1,7 +1,7 @@
 {
   "name": "xcorner-generic",
-  "version": "1.0.0",
-  "description": "Xcorner : fenetre flottante, dossier de medias configurable (image / video / texte), sans mot de passe",
+  "version": "1.0.1",
+  "description": "Xcorner: floating window with configurable media sources (image / video / text), no password",
   "private": true,
   "author": "Jon Arbuckle",
   "main": "src/main.js",

@@ -113,8 +113,8 @@ function prettyAccount(url) {
 
 function setStatus(sum) {
   els.setupStatus.textContent = [
-    sum.folder ? 'Dossier : 1' : 'Dossier : aucun',
-    'Fichiers : ' + sum.files
+    sum.folder ? 'Folder: 1' : 'Folder: none',
+    'Files: ' + sum.files
   ].join('   ·   ');
   els.startBtn.disabled = !(sum.folder || sum.files);
 }
@@ -151,17 +151,17 @@ async function showPicker() {
   els.pickerMsg.textContent = '';
   const perm = await window.xc.capturePermission();
   if (perm.status === 'denied' || perm.status === 'restricted') {
-    showPickerMsg('Autorise "Enregistrement d\'ecran" pour Xcorner dans Reglages > Confidentialite, puis relance l\'app.', true);
+    showPickerMsg('Enable "Screen Recording" for Xcorner in Settings > Privacy, then relaunch the app.', true);
     return;
   }
   const sources = await window.xc.captureList();
   if (!sources.length) {
-    showPickerMsg('Aucune fenetre detectee. Si tu n\'as jamais autorise Xcorner, ouvre Reglages.', true);
+    showPickerMsg('No window detected. If you never authorized Xcorner, open Settings.', true);
     return;
   }
   // Si pas de miniature, c'est probablement un probleme de permission.
   const hasThumbs = sources.some((s) => s.thumb);
-  if (!hasThumbs) showPickerMsg('Miniatures indisponibles (autorisation manquante ?).', true);
+  if (!hasThumbs) showPickerMsg('Thumbnails unavailable (missing permission?).', true);
   for (const s of sources) {
     const card = document.createElement('button');
     card.className = 'pick-item';
@@ -185,7 +185,7 @@ function showPickerMsg(txt, withOpenSettings) {
   els.pickerMsg.textContent = txt;
   if (withOpenSettings) {
     const btn = document.createElement('button');
-    btn.textContent = ' Ouvrir Reglages';
+    btn.textContent = ' Open Settings';
     btn.className = 'ghost';
     btn.style.marginLeft = '6px';
     btn.addEventListener('click', () => window.xc.captureOpenSettings());
@@ -200,7 +200,7 @@ function pickWindow(sourceId, name) {
 
 async function loadMedia() {
   const list = await window.xc.mediaList();
-  if (!list.length) { showSetup(); els.hint.textContent = 'Aucun media trouve dans les sources'; return; }
+  if (!list.length) { showSetup(); els.hint.textContent = 'No media found in sources'; return; }
   startViewer(list);
 }
 
@@ -293,7 +293,7 @@ async function refreshTiktok() {
   const lists = await window.xc.tiktokGet();
   renderTtList(lists);
   if (!avail.available) {
-    els.ttStatus.textContent = 'yt-dlp introuvable (fil desactive)';
+    els.ttStatus.textContent = 'yt-dlp not found (feed disabled)';
     setCategoryButtonsEnabled(false);
     return;
   }
@@ -307,13 +307,13 @@ async function submitTiktok() {
   if (!v) return;
   const res = await window.xc.tiktokAdd(els.ttCat.value, v);
   if (res.ok) { els.ttInput.value = ''; refreshTiktok(); }
-  else els.ttStatus.textContent = 'Lien TikTok non reconnu';
+  else els.ttStatus.textContent = 'TikTok URL not recognized';
 }
 
 async function launchCategory(cat) {
-  els.hint.textContent = 'Chargement des videos ' + cat + '...';
+  els.hint.textContent = 'Loading ' + cat + ' videos...';
   const pool = await window.xc.tiktokPool(cat);
-  if (!pool.length) { els.hint.textContent = 'Aucune video trouvee pour ' + cat; return; }
+  if (!pool.length) { els.hint.textContent = 'No video found for ' + cat; return; }
   els.hint.textContent = '';
   startViewer(pool, true); // pool deja melange + premieres prechargees cote main
 }
@@ -439,7 +439,7 @@ function renderInto(slot, item) {
       v.play().catch(() => {});
     }).catch(() => {
       slot.innerHTML = '';
-      fallbackCard(slot, 'Capture impossible. Autorise Enregistrement d\'ecran pour Xcorner puis relance.');
+      fallbackCard(slot, 'Capture failed. Enable Screen Recording for Xcorner then relaunch.');
     });
     return;
   }
@@ -448,7 +448,7 @@ function renderInto(slot, item) {
   if (item.kind === 'tiktok') {
     const card = document.createElement('div');
     card.className = 'fallback';
-    card.textContent = 'Chargement...';
+    card.textContent = 'Loading...';
     slot.appendChild(card);
     const nx = state.list[(state.index + 1) % state.list.length];
     if (nx && nx.kind === 'tiktok') window.xc.tiktokPrefetch(nx.id, nx.url);
@@ -493,7 +493,7 @@ function renderInto(slot, item) {
       return window.mammoth.convertToHtml({ arrayBuffer: ab }).then((res) => {
         if (seq === state.renderSeq) card.innerHTML = sanitize(res.value || '');
       });
-    }).catch(() => { if (seq === state.renderSeq) { card.remove(); fallbackCard(slot, 'Document Word illisible'); } });
+    }).catch(() => { if (seq === state.renderSeq) { card.remove(); fallbackCard(slot, 'Unreadable Word document'); } });
     return;
   }
 
@@ -506,11 +506,11 @@ function renderInto(slot, item) {
       const wb = window.XLSX.read(new Uint8Array(ab), { type: 'array' });
       const ws = wb.Sheets[wb.SheetNames[0]];
       card.innerHTML = sanitize(window.XLSX.utils.sheet_to_html(ws));
-    }).catch(() => { if (seq === state.renderSeq) { card.remove(); fallbackCard(slot, 'Tableur illisible'); } });
+    }).catch(() => { if (seq === state.renderSeq) { card.remove(); fallbackCard(slot, 'Unreadable spreadsheet'); } });
     return;
   }
 
-  fallbackCard(slot, 'Apercu non disponible' + (item.ext ? ' (' + item.ext + ')' : ''));
+  fallbackCard(slot, 'Preview unavailable' + (item.ext ? ' (' + item.ext + ')' : ''));
 }
 
 function preloadNext() {
@@ -580,7 +580,7 @@ function toggleMute() {
 async function toggleMode() {
   state.mode = state.mode === 'primary' ? 'secondary' : 'primary';
   await window.xc.setMode(state.mode);
-  els.btnMode.textContent = state.mode === 'primary' ? 'Detacher' : 'Epingler';
+  els.btnMode.textContent = state.mode === 'primary' ? 'Detach' : 'Pin';
 }
 
 function goPrev() { if (state.feed) feedScroll(-1); else advance(-1); }

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="Content-Security-Policy"
@@ -15,7 +15,7 @@
   <script src="vendor/xlsx.min.js"></script>
 </head>
 <body>
-  <!-- Ecran de lancement (laisse le temps au prewarm goon/femboy) -->
+  <!-- Splash screen (lets the goon/femboy prewarm catch up) -->
   <div id="splash" hidden>
     <div class="splash-inner">
       <div class="splash-logo">
@@ -45,18 +45,18 @@
   <header id="bar">
     <span id="bar-title" class="drag">Xcorner</span>
     <div class="bar-actions">
-      <button id="btn-new" title="Nouvelle fenetre">+</button>
+      <button id="btn-new" title="New window">+</button>
       <button id="btn-sources" title="Sources">Sources</button>
-      <button id="btn-mode" title="Detacher / Epingler">Detacher</button>
-      <button id="btn-close" title="Fermer cette fenetre">Fermer</button>
+      <button id="btn-mode" title="Detach / Pin">Detach</button>
+      <button id="btn-close" title="Close this window">Close</button>
     </div>
   </header>
 
-  <!-- Panneau des sources (sert aussi d'etat "vide") -->
+  <!-- Sources panel (doubles as the "empty" state) -->
   <section id="setup" class="view" hidden>
     <div class="setup-box">
 
-      <!-- En-tete : logo + titre + statut -->
+      <!-- Header: logo + title + status -->
       <header class="setup-head">
         <div class="setup-brand">
           <svg class="setup-mark" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -74,29 +74,29 @@
           </svg>
           <h1 id="setup-title">Xcorner</h1>
         </div>
-        <div id="setup-status" class="status-pill">Aucune source</div>
+        <div id="setup-status" class="status-pill">No source</div>
       </header>
 
-      <!-- Section : medias locaux -->
+      <!-- Section: local media -->
       <section class="panel-section">
-        <div class="section-label">Medias locaux</div>
+        <div class="section-label">Local media</div>
         <div class="chip-row">
           <button id="add-folder" class="chip">
             <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-7l-2-2H5a2 2 0 0 0-2 2z"/></svg>
-            Dossier
+            Folder
           </button>
           <button id="add-file" class="chip">
             <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            Fichiers
+            Files
           </button>
         </div>
         <div class="row-actions">
-          <button id="clear-sources" class="link">Effacer</button>
-          <button id="start-btn" class="cta">Lancer</button>
+          <button id="clear-sources" class="link">Clear</button>
+          <button id="start-btn" class="cta">Start</button>
         </div>
       </section>
 
-      <!-- Section : services web -->
+      <!-- Section: web services -->
       <section class="panel-section">
         <div class="section-label">Services</div>
         <div class="chip-row">
@@ -110,26 +110,26 @@
           </button>
           <button id="open-site" class="chip">
             <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18"/></svg>
-            Site web
+            Website
           </button>
           <button id="open-window" class="chip">
             <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
-            Fenetre
+            Window
           </button>
         </div>
         <div id="site-row" class="inline-row" hidden>
-          <input id="site-input" type="text" placeholder="URL (ex: open.spotify.com)" />
-          <button id="site-ok" class="cta-mini">Ouvrir</button>
+          <input id="site-input" type="text" placeholder="URL (e.g. open.spotify.com)" />
+          <button id="site-ok" class="cta-mini">Open</button>
         </div>
       </section>
 
-      <!-- Section : categories par defaut (rempli dynamiquement) -->
+      <!-- Section: built-in categories (filled dynamically) -->
       <section class="panel-section" id="cat-public-section" hidden>
         <div class="section-label">Categories</div>
         <div id="cat-public" class="cat-grid"></div>
       </section>
 
-      <!-- Section : NSFW (cachee derriere un toggle) -->
+      <!-- Section: NSFW (hidden behind a toggle) -->
       <section class="panel-section">
         <button id="nsfw-toggle" class="nsfw-toggle">
           <span class="nsfw-dot"></span>NSFW<span class="nsfw-chev">▾</span>
@@ -137,15 +137,15 @@
         <div id="nsfw-zone" class="nsfw-zone" hidden>
           <div id="cat-nsfw" class="cat-grid"></div>
           <details class="accounts-block">
-            <summary>Gerer les comptes</summary>
+            <summary>Manage accounts</summary>
             <div class="account-tools">
-              <button id="tt-toggle" class="link">+ Ajouter</button>
-              <button id="tt-reset" class="link">Defaut</button>
+              <button id="tt-toggle" class="link">+ Add</button>
+              <button id="tt-reset" class="link">Reset</button>
             </div>
             <div id="tt-row" class="inline-row" hidden>
               <select id="tt-cat"></select>
-              <input id="tt-input" type="text" placeholder="Lien d'un compte TikTok" />
-              <button id="tt-ok" class="cta-mini">Ajouter</button>
+              <input id="tt-input" type="text" placeholder="TikTok account URL" />
+              <button id="tt-ok" class="cta-mini">Add</button>
             </div>
             <div id="tt-list" class="tt-list"></div>
             <p id="tt-status" class="hint"></p>
@@ -160,19 +160,19 @@
     </div>
   </section>
 
-  <!-- Selecteur de fenetre a capturer -->
+  <!-- Window picker (for screen capture) -->
   <section id="picker" class="view" hidden>
     <div class="picker-head">
-      <button id="picker-back">Retour</button>
-      <span class="picker-title">Choisir une fenetre</span>
-      <button id="picker-refresh">Actualiser</button>
+      <button id="picker-back">Back</button>
+      <span class="picker-title">Pick a window</span>
+      <button id="picker-refresh">Refresh</button>
     </div>
     <p id="picker-msg" class="hint" hidden></p>
-    <p class="picker-note">macOS ne liste que les fenetres du bureau actuel. Pour en voir d'autres, va sur leur bureau puis Actualiser.</p>
+    <p class="picker-note">macOS only lists windows from the current desktop. Switch to their desktop, then hit Refresh.</p>
     <div id="picker-grid"></div>
   </section>
 
-  <!-- Lecteur -->
+  <!-- Viewer -->
   <section id="viewer" class="view" hidden>
     <div id="stage">
       <div class="slot" id="slotA"></div>
@@ -181,17 +181,17 @@
     <webview id="feed" hidden partition="persist:tiktok"
              useragent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"></webview>
     <footer id="controls">
-      <button id="btn-prev" class="ctrl" title="Precedent" aria-label="Precedent">
+      <button id="btn-prev" class="ctrl" title="Previous" aria-label="Previous">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
-      <button id="btn-play" class="ctrl" data-state="playing" title="Pause / Lecture" aria-label="Lecture / Pause">
+      <button id="btn-play" class="ctrl" data-state="playing" title="Play / Pause" aria-label="Play / Pause">
         <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/></svg>
         <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><polygon points="7 4 20 12 7 20" fill="currentColor"/></svg>
       </button>
-      <button id="btn-next" class="ctrl" title="Suivant" aria-label="Suivant">
+      <button id="btn-next" class="ctrl" title="Next" aria-label="Next">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
-      <button id="btn-mute" class="ctrl" data-state="muted" title="Son" aria-label="Son">
+      <button id="btn-mute" class="ctrl" data-state="muted" title="Sound" aria-label="Sound">
         <svg class="i-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 3 9 3 15 6 15 11 19" fill="currentColor" stroke="none"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/></svg>
         <svg class="i-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 3 9 3 15 6 15 11 19" fill="currentColor" stroke="none"/><path d="M18 8a6 6 0 0 1 0 8M15 11a3 3 0 0 1 0 2"/></svg>
       </button>
