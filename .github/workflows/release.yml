@@ -63,6 +63,7 @@ jobs:
           name: xcorner-${{ matrix.artifact_name }}
           path: |
             dist/*.dmg
+            dist/*.zip
             dist/*.exe
             dist/*.AppImage
           if-no-files-found: ignore

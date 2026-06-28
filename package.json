@@ -38,16 +38,12 @@
       "category": "public.app-category.entertainment",
       "hardenedRuntime": false,
       "target": [
-        { "target": "dmg", "arch": ["arm64", "x64"] }
+        { "target": "zip", "arch": ["arm64", "x64"] }
       ],
-      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "artifactName": "${productName}-${version}-mac-${arch}.${ext}",
       "extraResources": [
         { "from": "build/bin/darwin/", "to": "bin", "filter": ["**/*"] }
       ]
-    },
-    "dmg": {
-      "title": "${productName} ${version}",
-      "writeUpdateInfo": false
     },
     "linux": {
       "category": "AudioVideo",
