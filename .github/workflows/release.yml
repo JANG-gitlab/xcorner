@@ -32,14 +32,24 @@ jobs:
             dist_cmd: dist:win
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '22'
 
       - name: Install deps
         run: npm install
+
+      # Workaround electron-builder + hdiutil sur les runners macOS :
+      # Spotlight indexe le DMG en cours de build -> hdiutil detach fail.
+      - name: Disable Spotlight indexing (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          sudo mdutil -a -i off || true
+          defaults write com.apple.frameworks.diskimages skip-verify -bool true || true
+          defaults write com.apple.frameworks.diskimages skip-verify-locked -bool true || true
+          defaults write com.apple.frameworks.diskimages skip-verify-remote -bool true || true
 
       - name: Build (telecharge yt-dlp + electron-builder)
         env:
@@ -48,7 +58,7 @@ jobs:
         run: npm run ${{ matrix.dist_cmd }}
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: xcorner-${{ matrix.artifact_name }}
           path: |
@@ -62,7 +72,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           path: artifacts
 
